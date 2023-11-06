@@ -21,6 +21,7 @@ import { authReducer } from "./reducers";
     MatButtonModule,
     RouterModule.forChild([{ path: "", component: LoginComponent }]),
     StoreModule.forFeature(fromAuth.authFeatureKey, authReducer),
+    EffectsModule.forFeature([]),
   ],
   declarations: [LoginComponent],
   exports: [LoginComponent],
