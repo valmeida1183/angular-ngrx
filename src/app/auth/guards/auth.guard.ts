@@ -8,7 +8,7 @@ import {
 import { Observable } from "rxjs";
 import { AuthState } from "../reducers";
 import { Store, select } from "@ngrx/store";
-import { isLoggedIn } from "../selectors/auth.selector";
+import { isLoggedIn } from "../selectors/auth.selectors";
 import { tap } from "rxjs/operators";
 
 export const authGuard: CanActivateFn = (

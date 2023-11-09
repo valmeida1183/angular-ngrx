@@ -8,7 +8,7 @@ import { tap } from "rxjs/operators";
 import { noop } from "rxjs";
 import { Router } from "@angular/router";
 import { AuthState } from "../reducers";
-import { login } from "../actions/auth.action";
+import { login } from "../actions/auth.actions";
 
 @Component({
   selector: "login",
