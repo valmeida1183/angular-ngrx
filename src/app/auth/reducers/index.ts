@@ -18,16 +18,13 @@ export const initialAuthState: AuthState = {
   user: undefined,
 };
 
-// export const reducers: ActionReducerMap<AuthState> = {
-
-// };
-
 // Creates a Reducer function that defines what the store should do in response of login action.
 export const authReducer = createReducer(
   initialAuthState,
   on(AuthActions.login, (state, action) => {
     return { user: action.user };
   }),
+
   on(AuthActions.logout, (state, action) => {
     return { user: undefined };
   })
