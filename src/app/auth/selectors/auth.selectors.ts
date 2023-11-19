@@ -4,7 +4,7 @@ import { AuthState } from "../reducers";
 export const selectAuthState = createFeatureSelector<AuthState>("auth");
 
 // Selectors is a memoized function it means that this function keeps memory of previous execution and only executes if the
-// inputs of the function have not been calculated before otherwise returns previous calculed thas is cached.
+// inputs of the function have not been calculated before otherwise returns previous calculed that is cached.
 export const isLoggedIn = createSelector(
   selectAuthState,
   (auth) => !!auth.user

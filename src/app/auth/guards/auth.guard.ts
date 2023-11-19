@@ -16,8 +16,9 @@ export const authGuard: CanActivateFn = (
   state: RouterStateSnapshot
 ): Observable<boolean> => {
   const router = inject(Router);
+  const authStore$ = inject(Store<AuthState>);
 
-  return inject(Store<AuthState>).pipe(
+  return authStore$.pipe(
     select(isLoggedIn),
     tap((isLogged) => {
       if (!isLogged) {
