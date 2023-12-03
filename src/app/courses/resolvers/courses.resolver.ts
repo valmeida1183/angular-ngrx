@@ -4,34 +4,31 @@ import {
   Resolve,
   RouterStateSnapshot,
 } from "@angular/router";
-import { Store, select } from "@ngrx/store";
 import { Observable } from "rxjs";
-import { AppState } from "../../reducers";
-import { filter, finalize, first, tap } from "rxjs/operators";
-import { loadAllCourses } from "../store/actions/course.actions";
-import { areCoursesLoaded } from "../store/selectors/courses.selectors";
+import { filter, first, map, tap } from "rxjs/operators";
+import { CourseEntityService } from "../store/course-entity.service";
 
 @Injectable()
-export class CoursesResolver implements Resolve<any> {
+export class CoursesResolver implements Resolve<boolean> {
   loading = false;
 
-  constructor(private store: Store<AppState>) {}
+  constructor(private courseEntityService: CourseEntityService) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<any> {
-    return this.store.pipe(
-      select(areCoursesLoaded),
-      tap((coursesIsLoaded) => {
-        if (!this.loading && !coursesIsLoaded) {
-          this.loading = true;
-          this.store.dispatch(loadAllCourses());
+  ): Observable<boolean> {
+    return this.courseEntityService.loaded$.pipe(
+      tap((loaded) => {
+        if (!loaded) {
+          /* To sumarize this function call will be produce a side effect under the hood, that triggers http request  
+              and handle the data returned and store it into store.  
+            */
+          this.courseEntityService.getAll();
         }
       }),
-      filter((coursesIsLoaded) => coursesIsLoaded),
-      first(),
-      finalize(() => (this.loading = false)) // executes when observable is complete or an error occurs
+      filter((loaded) => !!loaded),
+      first()
     );
   }
 }

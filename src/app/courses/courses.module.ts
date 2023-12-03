@@ -26,14 +26,13 @@ import {
   EntityDefinitionService,
   EntityMetadataMap,
 } from "@ngrx/data";
-import { compareCourses, Course } from "./model/course";
 
-import { compareLessons, Lesson } from "./model/lesson";
 import { CoursesResolver } from "./resolvers/courses.resolver";
-import { EffectsModule } from "@ngrx/effects";
-import { CoursesEffects } from "./store/effects/courses.effects";
-import { StoreModule } from "@ngrx/store";
-import { coursesReducer } from "./store/reducers/course.reducer";
+import { CourseEntityService } from "./store/course-entity.service";
+import { CoursesDataService } from "./services/courses-data.service";
+import { compareCourses } from "./model/course";
+import { compareLessons } from "./model/lesson";
+import { LessonEntityService } from "./store/lesson-entity.service";
 
 export const coursesRoutes: Routes = [
   {
@@ -46,8 +45,23 @@ export const coursesRoutes: Routes = [
   {
     path: ":courseUrl",
     component: CourseComponent,
+    resolve: {
+      courses: CoursesResolver,
+    },
   },
 ];
+
+const entityMetadata: EntityMetadataMap = {
+  Course: {
+    sortComparer: compareCourses,
+    entityDispatcherOptions: {
+      optimisticUpdate: true,
+    },
+  },
+  Lesson: {
+    sortComparer: compareLessons,
+  },
+};
 
 @NgModule({
   imports: [
@@ -68,8 +82,6 @@ export const coursesRoutes: Routes = [
     MatMomentDateModule,
     ReactiveFormsModule,
     RouterModule.forChild(coursesRoutes),
-    EffectsModule.forFeature([CoursesEffects]),
-    StoreModule.forFeature("courses", coursesReducer),
   ],
   declarations: [
     HomeComponent,
@@ -83,8 +95,21 @@ export const coursesRoutes: Routes = [
     EditCourseDialogComponent,
     CourseComponent,
   ],
-  providers: [CoursesHttpService, CoursesResolver],
+  providers: [
+    CoursesHttpService,
+    CourseEntityService,
+    LessonEntityService,
+    CoursesResolver,
+    CoursesDataService,
+  ],
 })
 export class CoursesModule {
-  constructor() {}
+  constructor(
+    private entityDefinitionService: EntityDefinitionService,
+    private entityDataService: EntityDataService, // service to inform Ngrx/Data to override the default data service behavior for data fetching of NgRx, instead we should use your custom service.
+    private coursesDataService: CoursesDataService
+  ) {
+    entityDefinitionService.registerMetadataMap(entityMetadata);
+    entityDataService.registerService("Course", coursesDataService); // Here we pass our custom service dataservice.
+  }
 }
